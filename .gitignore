@@ -1,0 +1,11 @@
+ign_orig
+selenium-2.39.0
+cooked_traces_all/*
+cooked_traces/*
+train_sim_traces/*
+test_sim_traces/*
+traces/*
+abr_browser_dir/*
+*/results*/*
+test/models/*
+video_server/video*/*

@@ -1,0 +1,41 @@
+2018-01-15 19:38:48.929037 run_all_traces.py none: Command BB: python run_traces.py ../cooked_traces/ BB 0 10.5.20.129
+2018-01-15 19:41:47.143603 run_all_traces.py none: Command BB: python run_traces.py ../cooked_traces/ BB 0 10.5.20.129
+2018-01-15 19:41:47.816448 run_traces.py main(): Trace path: ../cooked_traces/
+2018-01-15 19:41:47.816560 run_traces.py main(): ABR Algorithm: BB
+2018-01-15 19:41:47.816608 run_traces.py main(): Process ID: 0
+2018-01-15 19:41:47.816644 run_traces.py main(): IP: 10.5.20.129
+
+2018-01-15 19:41:47.820448 run_traces.py main(): Server command exec: exec /usr/bin/python ../rl_server/simple_server.py BB test_norway_car.oslo-grimstad-report.2011-04-21_1135CEST.log_840
+
+
+2018-01-15 19:41:49.825611 run_traces.py main(): mm-delay command exec: 1 of 455: mm-delay 40 mm-link 12mbps ../cooked_traces/test_norway_car.oslo-grimstad-report.2011-04-21_1135CEST.log_840 /usr/bin/python run_video.py 10.5.20.129 BB 320 0 test_norway_car.oslo-grimstad-report.2011-04-21_1135CEST.log_840 2
+
+2018-01-15 19:41:53.056496 run_video.py none: ABR Algorithm: BB
+2018-01-15 19:41:53.056609 run_video.py none: Run Time: 320
+2018-01-15 19:41:53.056654 run_video.py none: Process ID: 0
+2018-01-15 19:41:53.056687 run_video.py none: Trace File: test_norway_car.oslo-grimstad-report.2011-04-21_1135CEST.log_840
+2018-01-15 19:41:53.056720 run_video.py none: Sleep Time: 2
+
+2018-01-15 19:41:55.058886 run_video.py none: Server URL: http://10.5.20.129/myindex_BB.html
+
+2018-01-15 19:41:55.482456 run_video.py none: Started supressed display.
+2018-01-15 19:42:09.142527 run_video.py none: Video playback started.
+2018-01-15 19:47:29.767113 run_video.py none: Stopped supressed display and Chrome driver.
+
+2018-01-15 19:47:29.995056 run_traces.py main(): Process execution successful. Breaking...
+
+2018-01-15 19:47:29.997924 run_traces.py main(): Server command exec: exec /usr/bin/python ../rl_server/simple_server.py BB test_norway_car.oslo-grimstad-report.2011-04-21_1135CEST.log_1440
+
+
+2018-01-15 19:47:32.003296 run_traces.py main(): mm-delay command exec: 2 of 455: mm-delay 40 mm-link 12mbps ../cooked_traces/test_norway_car.oslo-grimstad-report.2011-04-21_1135CEST.log_1440 /usr/bin/python run_video.py 10.5.20.129 BB 320 0 test_norway_car.oslo-grimstad-report.2011-04-21_1135CEST.log_1440 5
+
+2018-01-15 19:47:32.177957 run_video.py none: ABR Algorithm: BB
+2018-01-15 19:47:32.178036 run_video.py none: Run Time: 320
+2018-01-15 19:47:32.178068 run_video.py none: Process ID: 0
+2018-01-15 19:47:32.178092 run_video.py none: Trace File: test_norway_car.oslo-grimstad-report.2011-04-21_1135CEST.log_1440
+2018-01-15 19:47:32.178115 run_video.py none: Sleep Time: 5
+
+2018-01-15 19:47:37.183282 run_video.py none: Server URL: http://10.5.20.129/myindex_BB.html
+
+2018-01-15 19:47:37.380001 run_video.py none: Started supressed display.
+2018-01-15 19:47:42.628182 run_video.py none: Video playback started.
