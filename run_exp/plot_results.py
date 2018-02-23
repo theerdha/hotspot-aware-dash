@@ -276,50 +276,53 @@ def main():
 	# check each trace
 	# ---- ---- ---- ----
 
-	# for l in time_all[SCHEMES[0]]:
-	# 	schemes_check = True
-	# 	for scheme in SCHEMES:
-	# 		if l not in time_all[scheme] or len(time_all[scheme][l]) < VIDEO_LEN:
-	# 			schemes_check = False
-	# 			break
-	# 	if schemes_check:
-	# 		fig = plt.figure()
+	for l in time_all[SCHEMES[0]]:
+		schemes_check = True
+		for scheme in SCHEMES:
+			if l not in time_all[scheme] or len(time_all[scheme][l]) < VIDEO_LEN:
+				schemes_check = False
+				break
+		if schemes_check:
+			fig = plt.figure()
 
-	# 		ax = fig.add_subplot(311)
-	# 		for scheme in SCHEMES:
-	# 			ax.plot(time_all[scheme][l][:VIDEO_LEN], bit_rate_all[scheme][l][:VIDEO_LEN])
-	# 		colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-	# 		for i,j in enumerate(ax.lines):
-	# 			j.set_color(colors[i])	
-	# 		plt.title(l)
-	# 		plt.ylabel('bit rate selection (kbps)')
+			ax = fig.add_subplot(311)
+			for scheme in SCHEMES:
+				ax.plot(time_all[scheme][l][:VIDEO_LEN], bit_rate_all[scheme][l][:VIDEO_LEN])
+			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
+			for i,j in enumerate(ax.lines):
+				j.set_color(colors[i])	
+			plt.title(l)
+			plt.ylabel('bit rate selection (kbps)')
 
-	# 		ax = fig.add_subplot(312)
-	# 		for scheme in SCHEMES:
-	# 			ax.plot(time_all[scheme][l][:VIDEO_LEN], buff_all[scheme][l][:VIDEO_LEN])
-	# 		colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-	# 		for i,j in enumerate(ax.lines):
-	# 			j.set_color(colors[i])	
-	# 		plt.ylabel('buffer size (sec)')
+			ax = fig.add_subplot(312)
+			for scheme in SCHEMES:
+				ax.plot(time_all[scheme][l][:VIDEO_LEN], buff_all[scheme][l][:VIDEO_LEN])
+			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
+			for i,j in enumerate(ax.lines):
+				j.set_color(colors[i])	
+			plt.ylabel('buffer size (sec)')
 
-	# 		ax = fig.add_subplot(313)
-	# 		for scheme in SCHEMES:
-	# 			ax.plot(time_all[scheme][l][:VIDEO_LEN], bw_all[scheme][l][:VIDEO_LEN])
-	# 		colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-	# 		for i,j in enumerate(ax.lines):
-	# 			j.set_color(colors[i])	
-	# 		plt.ylabel('bandwidth (mbps)')
-	# 		plt.xlabel('time (sec)')
+			ax = fig.add_subplot(313)
+			for scheme in SCHEMES:
+				ax.plot(time_all[scheme][l][:VIDEO_LEN], bw_all[scheme][l][:VIDEO_LEN])
+			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
+			for i,j in enumerate(ax.lines):
+				j.set_color(colors[i])	
+			plt.ylabel('bandwidth (mbps)')
+			plt.xlabel('time (sec)')
 
-	# 		SCHEMES_REW = []
-	# 		for scheme in SCHEMES:
-	# 			if scheme == SIM_DP:
-	# 				SCHEMES_REW.append(scheme + ': ' + str(raw_reward_all[scheme][l]))
-	# 			else:
-	# 				SCHEMES_REW.append(scheme + ': ' + str(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN])))
+			SCHEMES_REW = []
+			for scheme in SCHEMES:
+				if scheme == SIM_DP:
+					SCHEMES_REW.append(scheme + ': ' + str(raw_reward_all[scheme][l]))
+				else:
+					SCHEMES_REW.append(scheme + ': ' + str(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN])))
 
-	# 		ax.legend(SCHEMES_REW, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=int(np.ceil(len(SCHEMES) / 2.0)))
-	# 		plt.show()
+			ax.legend(SCHEMES_REW, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=int(np.ceil(len(SCHEMES) / 2.0)))
+			# plt.show()
+			plt.tight_layout()
+			plt.savefig("plots/other_params.pdf", format="pdf")
+			plt.savefig("plots/other_params.png", format="png")
 
 
 if __name__ == '__main__':
