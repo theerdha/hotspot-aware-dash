@@ -9,13 +9,13 @@ NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
-# VIDEO_LEN = 64
-VIDEO_LEN = 49
+VIDEO_LEN = 64
+# VIDEO_LEN = 49
 VIDEO_BIT_RATE = [350, 600, 1000, 2000, 3000]
 COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired 
 SIM_DP = 'sim_dp'
-SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
-
+# SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL', 'robustMPC', 'fastMPC', 'sim_rl', SIM_DP]
+SCHEMES = ['BB', 'FESTIVE', 'BOLA', 'RL', 'robustMPC', 'fastMPC']
 
 def main():
 	time_all = {}
@@ -59,6 +59,7 @@ def main():
 					parse = line.split()
 					if len(parse) <= 1:
 						break
+						# continue
 					time_ms.append(float(parse[0]))
 					bit_rate.append(int(parse[1]))
 					buff.append(float(parse[2]))
@@ -85,6 +86,10 @@ def main():
 				raw_reward_all[scheme][log_file[len('log_' + str(scheme) + '_'):]] = reward
 				break
 
+	## Custom
+	# for scheme in SCHEMES:
+	# 	print scheme + " " + str(len(time_all[scheme].keys()))
+
 	# ---- ---- ---- ----
 	# Reward records
 	# ---- ---- ---- ----
@@ -94,21 +99,10 @@ def main():
 	for scheme in SCHEMES:
 		reward_all[scheme] = []
 
-	# TIME_ALL = []
-
 	for l in time_all[SCHEMES[0]]:
 		schemes_check = True
 		for scheme in SCHEMES:
-    			if l in time_all[scheme]:
-    					#TIME_ALL.append(len(time_all[scheme][l]))
-						if len(time_all[scheme][l]) != 49:
-    							schemes_check = False
-    							break
 			if l not in time_all[scheme] or len(time_all[scheme][l]) < VIDEO_LEN:
-    				# if l in time_all[scheme]:
-    				# 	print len(time_all[scheme][l])
-				# print VIDEO_LEN
-				# print (l not in time_all[scheme]) or (len(time_all[scheme][l]) < VIDEO_LEN)
 				schemes_check = False
 				break
 		if schemes_check:
@@ -119,7 +113,9 @@ def main():
 				else:
 					reward_all[scheme].append(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN]))
 
-	# print Counter(TIME_ALL)
+	## Custom
+	for scheme in SCHEMES:
+    		print "reward " + scheme + ": " + str(len(reward_all[scheme]))
 
 	mean_rewards = {}
 	for scheme in SCHEMES:
