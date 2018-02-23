@@ -30,15 +30,19 @@ def generate_cdf(data_points):
     freq_dist = Counter(data_points)
     xvals = sorted(freq_dist.keys())
 
-    pos_nz = 0
+    #pos_nz = 0
     
-    for i, xval in enumerate(xvals):
-        if xval > 0:
-            pos_nz = i
-            break
-    xvals = xvals[pos_nz:]
+    #for i, xval in enumerate(xvals):
+    #    if xval > 0:
+    #        pos_nz = i
+    #        break
+    #xvals = xvals[pos_nz:]
+		
+    ph_xvals = [xval+(1-xvals[0]) for xval in xvals]
 
-    plot_xvals = np.logspace(start=log10(xvals[0]), stop=log10(xvals[-1]), num=100, base=10)
+    plot_ph_xvals = np.logspace(start=log10(ph_xvals[0]), stop=log10(ph_xvals[-1]), num=100, base=10)
+    plot_xvals = [xval+xvals[0]-1 for xval in plot_ph_xvals]
+    #print plot_xvals
     plot_yvals = []
     
     cum_freq = 0
@@ -245,7 +249,7 @@ def main():
 		xvals, yvals = generate_cdf(reward_all[scheme])
 		ax.plot(xvals, yvals, label=scheme_to_label(scheme).format(mean_rewards[scheme]),
 			 linestyle=linestyle.next(), linewidth=2, marker=marker.next(), markersize=5)
-		xlim = len(xvals)
+		#xlim = len(xvals)
 
 	## Custom comment start
 	#colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
@@ -256,8 +260,8 @@ def main():
 	## Custom comment end
 
 	## Custom start
-	ax.legend(loc=4)
-	ax.set_xlim(0, xlim+5)
+	ax.legend(loc=2)
+	ax.set_xlim(-500, 100)
 	## Custom ends
 	
 	plt.ylabel('CDF')
