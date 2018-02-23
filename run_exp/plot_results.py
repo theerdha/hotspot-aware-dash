@@ -275,6 +275,7 @@ def main():
 	# ---- ---- ---- ----
 	# check each trace
 	# ---- ---- ---- ----
+	sns.set(style="ticks", font_scale=0.8)
 
 	for l in time_all[SCHEMES[0]]:
 		schemes_check = True
@@ -320,7 +321,7 @@ def main():
 
 			ax.legend(SCHEMES_REW, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=int(np.ceil(len(SCHEMES) / 2.0)))
 			# plt.show()
-			plt.tight_layout()
+			#plt.tight_layout()
 			plt.savefig("plots/other_params.pdf", format="pdf")
 			plt.savefig("plots/other_params.png", format="png")
 
