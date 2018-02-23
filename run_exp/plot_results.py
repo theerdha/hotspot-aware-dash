@@ -2,20 +2,71 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from collections import Counter
-
+import seaborn as sns
+import itertools
+from math import log10
 
 RESULTS_FOLDER = './results/'
 NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
-VIDEO_LEN = 64
-# VIDEO_LEN = 49
+# VIDEO_LEN = 64
+## Custom start
+VIDEO_LEN = 49
+## Custom end
 VIDEO_BIT_RATE = [350, 600, 1000, 2000, 3000]
 COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired 
 SIM_DP = 'sim_dp'
 # SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL', 'robustMPC', 'fastMPC', 'sim_rl', SIM_DP]
-SCHEMES = ['BB', 'FESTIVE', 'BOLA', 'RL', 'robustMPC', 'fastMPC']
+# SCHEMES = ['BB', 'FESTIVE', 'BOLA', 'RL', 'robustMPC', 'fastMPC']
+SCHEMES = ['RL', 'BOLA', 'robustMPC', 'fastMPC', 'BB', 'FESTIVE']
+
+##################################################
+
+def generate_cdf(data_points):
+    """ Returns empirical CDF for provided set of data points """
+
+    freq_dist = Counter(data_points)
+    xvals = sorted(freq_dist.keys())
+
+    pos_nz = 0
+    
+    for i, xval in enumerate(xvals):
+        if xval > 0:
+            pos_nz = i
+            break
+    xvals = xvals[pos_nz:]
+
+    plot_xvals = np.logspace(start=log10(xvals[0]), stop=log10(xvals[-1]), num=100, base=10)
+    plot_yvals = []
+    
+    cum_freq = 0
+    last_pos = 0
+    
+    for plot_xval in plot_xvals:
+        for xval in xvals[last_pos:]:
+            if xval > plot_xval:
+                break
+            cum_freq += freq_dist[xval]
+            last_pos += 1
+        plot_yvals.append(cum_freq/float(len(data_points)))
+
+    return plot_xvals, plot_yvals
+
+##################################################
+
+def scheme_to_label(scheme):
+    	label = scheme
+	if scheme == "FESTIVE":
+    		label = "FV"
+	elif scheme == "BOLA":
+    			label = "BO"
+	elif scheme == "robustMPC":
+    			label = "rM"
+	elif scheme == "fastMPC":
+    			label = "fM"
+	return label + ": {:.2f}"
 
 def main():
 	time_all = {}
@@ -86,9 +137,10 @@ def main():
 				raw_reward_all[scheme][log_file[len('log_' + str(scheme) + '_'):]] = reward
 				break
 
-	## Custom
+	## Custom start
 	# for scheme in SCHEMES:
 	# 	print scheme + " " + str(len(time_all[scheme].keys()))
+	## Custom end
 
 	# ---- ---- ---- ----
 	# Reward records
@@ -104,6 +156,15 @@ def main():
 		for scheme in SCHEMES:
 			if l not in time_all[scheme] or len(time_all[scheme][l]) < VIDEO_LEN:
 				schemes_check = False
+				## The problem is here!!!
+				## Custom start
+				# if l not in time_all[scheme]:
+    			# 		print "l: {}".format(l)
+				# 	print "time_all[scheme]: {}".format(time_all[scheme])
+				# elif len(time_all[scheme][l]) < VIDEO_LEN:
+    			# 		print "len(time_all[scheme][l]): {}".format(len(time_all[scheme][l]))
+				# 	print "VIDEO_LEN: {}".format(VIDEO_LEN)
+				## Custom end
 				break
 		if schemes_check:
 			log_file_all.append(l)
@@ -113,105 +174,148 @@ def main():
 				else:
 					reward_all[scheme].append(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN]))
 
-	## Custom
-	for scheme in SCHEMES:
-    		print "reward " + scheme + ": " + str(len(reward_all[scheme]))
+	## Custom start
+	# for scheme in SCHEMES:
+    # 		print "Reward " + scheme + ": " + str(len(reward_all[scheme]))
+	## Custom end
 
 	mean_rewards = {}
 	for scheme in SCHEMES:
 		mean_rewards[scheme] = np.mean(reward_all[scheme])
 
+	sns.set(style="ticks", font_scale=1.4)
+	marker = itertools.cycle(("o", "v", "p", "d", "h", "s", "^"))
+	linestyle = itertools.cycle(("-", "-.", "--", ":"))
+
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 
+	## Custom comment start
+	# for scheme in SCHEMES:
+	# 	ax.plot(reward_all[scheme])
+	## Custom comment end
+
+	## Custom start
 	for scheme in SCHEMES:
-		ax.plot(reward_all[scheme])
+    		ax.plot(reward_all[scheme], label=scheme_to_label(scheme).format(mean_rewards[scheme]),
+			 linestyle=linestyle.next(), linewidth=2, marker=marker.next(), markersize=5)
+	## Custom end
 	
+	## Custom comment start
 	SCHEMES_REW = []
 	for scheme in SCHEMES:
 		SCHEMES_REW.append(scheme + ': ' + str(mean_rewards[scheme]))
 
-	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-	for i,j in enumerate(ax.lines):
-		j.set_color(colors[i])
+	# colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
+	# for i,j in enumerate(ax.lines):
+	# 	j.set_color(colors[i])
 
-	ax.legend(SCHEMES_REW, loc=4)
+	# ax.legend(SCHEMES_REW, loc=4)
+	## Custom comment end
+
+	## Custom start
+	ax.set_xlim(0, len(reward_all['RL'])+5)
+	ax.legend(loc=4)
+	## Custom end
 	
 	plt.ylabel('total reward')
 	plt.xlabel('trace index')
-	plt.show()
+	# plt.show()
+	plt.tight_layout()
+	plt.savefig("plots/all_rewards.pdf", format="pdf")
+	plt.savefig("plots/all_rewards.png", format="png")
 
 	# ---- ---- ---- ----
 	# CDF 
 	# ---- ---- ---- ----
 
+	## Custom start
+	marker = itertools.cycle(("o", "v", "p", "d", "h", "s", "^"))
+	linestyle = itertools.cycle(("-", "-.", "--", ":"))
+	xlim = 0
+	## Custom end
+
 	fig = plt.figure()
 	ax = fig.add_subplot(111)
 
 	for scheme in SCHEMES:
-		values, base = np.histogram(reward_all[scheme], bins=NUM_BINS)
-		cumulative = np.cumsum(values)
-		ax.plot(base[:-1], cumulative)	
+		# values, base = np.histogram(reward_all[scheme], bins=80, density=1)
+		# cumulative = np.cumsum(values)
+		# ax.plot(base[:-1], cumulative)
+		xvals, yvals = generate_cdf(reward_all[scheme])
+		ax.plot(xvals, yvals, label=scheme_to_label(scheme).format(mean_rewards[scheme]),
+			 linestyle=linestyle.next(), linewidth=2, marker=marker.next(), markersize=5)
+		xlim = len(xvals)
 
-	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-	for i,j in enumerate(ax.lines):
-		j.set_color(colors[i])	
+	## Custom comment start
+	#colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
+	#for i,j in enumerate(ax.lines):
+	#	j.set_color(colors[i])	
 
-	ax.legend(SCHEMES_REW, loc=4)
+	#ax.legend(SCHEMES_REW, loc=4)
+	## Custom comment end
+
+	## Custom start
+	ax.legend(loc=4)
+	ax.set_xlim(0, xlim+5)
+	## Custom ends
 	
 	plt.ylabel('CDF')
 	plt.xlabel('total reward')
-	plt.show()
+	# plt.show()
+	plt.tight_layout()
+	plt.savefig("plots/cdf_rewards.pdf", format="pdf")
+	plt.savefig("plots/cdf_rewards.png", format="png")
 
 
 	# ---- ---- ---- ----
 	# check each trace
 	# ---- ---- ---- ----
 
-	for l in time_all[SCHEMES[0]]:
-		schemes_check = True
-		for scheme in SCHEMES:
-			if l not in time_all[scheme] or len(time_all[scheme][l]) < VIDEO_LEN:
-				schemes_check = False
-				break
-		if schemes_check:
-			fig = plt.figure()
+	# for l in time_all[SCHEMES[0]]:
+	# 	schemes_check = True
+	# 	for scheme in SCHEMES:
+	# 		if l not in time_all[scheme] or len(time_all[scheme][l]) < VIDEO_LEN:
+	# 			schemes_check = False
+	# 			break
+	# 	if schemes_check:
+	# 		fig = plt.figure()
 
-			ax = fig.add_subplot(311)
-			for scheme in SCHEMES:
-				ax.plot(time_all[scheme][l][:VIDEO_LEN], bit_rate_all[scheme][l][:VIDEO_LEN])
-			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-			for i,j in enumerate(ax.lines):
-				j.set_color(colors[i])	
-			plt.title(l)
-			plt.ylabel('bit rate selection (kbps)')
+	# 		ax = fig.add_subplot(311)
+	# 		for scheme in SCHEMES:
+	# 			ax.plot(time_all[scheme][l][:VIDEO_LEN], bit_rate_all[scheme][l][:VIDEO_LEN])
+	# 		colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
+	# 		for i,j in enumerate(ax.lines):
+	# 			j.set_color(colors[i])	
+	# 		plt.title(l)
+	# 		plt.ylabel('bit rate selection (kbps)')
 
-			ax = fig.add_subplot(312)
-			for scheme in SCHEMES:
-				ax.plot(time_all[scheme][l][:VIDEO_LEN], buff_all[scheme][l][:VIDEO_LEN])
-			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-			for i,j in enumerate(ax.lines):
-				j.set_color(colors[i])	
-			plt.ylabel('buffer size (sec)')
+	# 		ax = fig.add_subplot(312)
+	# 		for scheme in SCHEMES:
+	# 			ax.plot(time_all[scheme][l][:VIDEO_LEN], buff_all[scheme][l][:VIDEO_LEN])
+	# 		colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
+	# 		for i,j in enumerate(ax.lines):
+	# 			j.set_color(colors[i])	
+	# 		plt.ylabel('buffer size (sec)')
 
-			ax = fig.add_subplot(313)
-			for scheme in SCHEMES:
-				ax.plot(time_all[scheme][l][:VIDEO_LEN], bw_all[scheme][l][:VIDEO_LEN])
-			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-			for i,j in enumerate(ax.lines):
-				j.set_color(colors[i])	
-			plt.ylabel('bandwidth (mbps)')
-			plt.xlabel('time (sec)')
+	# 		ax = fig.add_subplot(313)
+	# 		for scheme in SCHEMES:
+	# 			ax.plot(time_all[scheme][l][:VIDEO_LEN], bw_all[scheme][l][:VIDEO_LEN])
+	# 		colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
+	# 		for i,j in enumerate(ax.lines):
+	# 			j.set_color(colors[i])	
+	# 		plt.ylabel('bandwidth (mbps)')
+	# 		plt.xlabel('time (sec)')
 
-			SCHEMES_REW = []
-			for scheme in SCHEMES:
-				if scheme == SIM_DP:
-					SCHEMES_REW.append(scheme + ': ' + str(raw_reward_all[scheme][l]))
-				else:
-					SCHEMES_REW.append(scheme + ': ' + str(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN])))
+	# 		SCHEMES_REW = []
+	# 		for scheme in SCHEMES:
+	# 			if scheme == SIM_DP:
+	# 				SCHEMES_REW.append(scheme + ': ' + str(raw_reward_all[scheme][l]))
+	# 			else:
+	# 				SCHEMES_REW.append(scheme + ': ' + str(np.sum(raw_reward_all[scheme][l][1:VIDEO_LEN])))
 
-			ax.legend(SCHEMES_REW, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=int(np.ceil(len(SCHEMES) / 2.0)))
-			plt.show()
+	# 		ax.legend(SCHEMES_REW, loc=9, bbox_to_anchor=(0.5, -0.1), ncol=int(np.ceil(len(SCHEMES) / 2.0)))
+	# 		plt.show()
 
 
 if __name__ == '__main__':
